@@ -1,5 +1,8 @@
 #include <gb/gb.h>
 
+#include "level.h"
+#include "tank.h"
+
 void init_gfx(void) {
     BGP_REG = 0xE4;
     DISPLAY_ON;
@@ -13,4 +16,5 @@ void main(void) {
     init_gfx();
 
     draw_level();
+    init_tank();
 }
