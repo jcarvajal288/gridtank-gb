@@ -7,6 +7,7 @@
 
 #include "constants.h"
 #include "input.h"
+#include "level.h"
 #include "point.h"
 
 #define TANK_SPEED 1
@@ -24,6 +25,7 @@ CardinalDirection orientation;
 CardinalDirection movement_direction;
 Point8 movement_destination;
 uint8_t animation_frame_counter;
+
 
 void draw_tank_sprite(void) {
     switch(orientation) {
@@ -48,6 +50,7 @@ void init_tank(void) {
     animation_frame_counter = 0;
     global_position.x = 5 * TILE_SIZE;
     global_position.y = 7 * TILE_SIZE;
+    movement_destination = global_position;
     OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_WHITE, DMG_LITE_GRAY, DMG_BLACK);
     set_sprite_data(0, tank_body_TILE_COUNT, tank_body_tiles);
     draw_tank_sprite();
@@ -77,6 +80,7 @@ void start_move_forward(void) {
             movement_direction = WEST;
             break;
     }
+    EMU_printf("%d, %d\n", movement_destination.x, movement_destination.y);
 }
 
 
@@ -147,16 +151,21 @@ void rotate_body_left(void) {
 State handle_idle_state(void) {
     if (up_pressed()) {
         start_move_forward();
-        return MOVING;
     } else if (down_pressed()) {
         start_move_backward();
-        return MOVING;
     } else if (right_pressed()) {
         rotate_body_right();
         return TURNING;
     } else if (left_pressed()) {
         rotate_body_left();
         return TURNING;
+    }
+    if (!is_tile_clear(movement_destination)) {
+        movement_destination = global_position;
+        return IDLE;
+    }
+    if (global_position.x != movement_destination.x || global_position.y != movement_destination.y) {
+        return MOVING;
     }
     return IDLE;
 }
