@@ -10,7 +10,11 @@ usage() {
     echo "  --tileset <tileset.png>    Generate the standalone tileset (.c/.h) or use as reference"
     echo "  --map <map.png>            Generate the map array (.c/.h)"
     echo "  --map-dir <directory>      Generate map arrays for all .png files in the input directory"
-    echo "  --output-dir <directory>   Output directory for map generation results"
+    echo "  --sprite <sprite.png>      Generate sprite asset (.c/.h) [defaults to -sw 16 -sh 16 -spr8x16]"
+    echo "  --output-dir <directory>   Output directory for generation results"
+    echo "  --sw <width>               Override default sprite width (default: 16)"
+    echo "  --sh <height>              Override default sprite height (default: 16)"
+    echo "  --no-spr8x16               Disable default 8x16 sprite mode"
     echo "  -h, --help                 Show this help message"
     echo ""
     echo "Note: If --tileset is omitted, png2asset will run in standard map mode without a reference tileset."
@@ -24,7 +28,13 @@ fi
 TILESET_PNG=""
 MAP_PNG=""
 MAP_DIR_IN=""
+SPRITE_PNG=""
 OUTPUT_DIR=""
+
+# Default implied sprite configurations
+SPRITE_WIDTH="16"
+SPRITE_HEIGHT="16"
+SPR8X16="true"
 
 # Parse command line arguments
 while [[ "$#" -gt 0 ]]; do
@@ -53,6 +63,14 @@ while [[ "$#" -gt 0 ]]; do
             MAP_DIR_IN="$2"
             shift 2
             ;;
+        --sprite)
+            if [ -z "$2" ] || [[ "$2" == --* ]]; then
+                echo "Error: --sprite requires a file path argument."
+                exit 1
+            fi
+            SPRITE_PNG="$2"
+            shift 2
+            ;;
         --output-dir)
             if [ -z "$2" ] || [[ "$2" == --* ]]; then
                 echo "Error: --output-dir requires a directory path argument."
@@ -60,6 +78,26 @@ while [[ "$#" -gt 0 ]]; do
             fi
             OUTPUT_DIR="$2"
             shift 2
+            ;;
+        --sw)
+            if [ -z "$2" ] || [[ "$2" == --* ]]; then
+                echo "Error: --sw requires a width value."
+                exit 1
+            fi
+            SPRITE_WIDTH="$2"
+            shift 2
+            ;;
+        --sh)
+            if [ -z "$2" ] || [[ "$2" == --* ]]; then
+                echo "Error: --sh requires a height value."
+                exit 1
+            fi
+            SPRITE_HEIGHT="$2"
+            shift 2
+            ;;
+        --no-spr8x16)
+            SPR8X16="false"
+            shift 1
             ;;
         -h|--help)
             usage
@@ -80,8 +118,6 @@ if [ -n "$TILESET_PNG" ]; then
         exit 1
     fi
 
-    # Only generate standalone tileset output if we aren't purely batch processing maps,
-    # or if --map was also explicitly specified.
     if [ -z "$MAP_DIR_IN" ] || [ -n "$MAP_PNG" ]; then
         TILESET_DIR=$(dirname "$TILESET_PNG")
         TILESET_BASE=$(basename "$TILESET_PNG" .png)
@@ -99,7 +135,6 @@ if [ -n "$MAP_PNG" ]; then
         exit 1
     fi
 
-    # Route output directory if --output-dir is specified
     if [ -n "$OUTPUT_DIR" ]; then
         mkdir -p "$OUTPUT_DIR"
         MAP_OUT_DIR="$OUTPUT_DIR"
@@ -126,13 +161,11 @@ if [ -n "$MAP_DIR_IN" ]; then
         exit 1
     fi
 
-    # Determine destination directory
     OUT_DIR="${OUTPUT_DIR:-$MAP_DIR_IN}"
     mkdir -p "$OUT_DIR"
 
     echo "Step 3: Processing all PNG maps in '${MAP_DIR_IN}'..."
 
-    # Enable nullglob to safely handle directories with no PNGs
     shopt -s nullglob
     PNG_FILES=("${MAP_DIR_IN}"/*.png)
     shopt -u nullglob
@@ -141,7 +174,6 @@ if [ -n "$MAP_DIR_IN" ]; then
         echo "Warning: No .png files found in '${MAP_DIR_IN}'."
     else
         for img in "${PNG_FILES[@]}"; do
-            # Skip the tileset file if a tileset is specified and resides inside the input map directory
             if [ -n "$TILESET_PNG" ]; then
                 REAL_IMG=$(readlink -f "$img" 2>/dev/null || realpath "$img")
                 REAL_TILESET=$(readlink -f "$TILESET_PNG" 2>/dev/null || realpath "$TILESET_PNG")
@@ -162,6 +194,34 @@ if [ -n "$MAP_DIR_IN" ]; then
             fi
         done
     fi
+fi
+
+# Handle Sprite Generation
+if [ -n "$SPRITE_PNG" ]; then
+    if [ ! -f "$SPRITE_PNG" ]; then
+        echo "Error: Sprite file '$SPRITE_PNG' does not exist."
+        exit 1
+    fi
+
+    if [ -n "$OUTPUT_DIR" ]; then
+        mkdir -p "$OUTPUT_DIR"
+        SPRITE_OUT_DIR="$OUTPUT_DIR"
+    else
+        SPRITE_OUT_DIR=$(dirname "$SPRITE_PNG")
+    fi
+
+    SPRITE_BASE=$(basename "$SPRITE_PNG" .png)
+    SPRITE_OUT="${SPRITE_OUT_DIR}/${SPRITE_BASE}"
+
+    # Build argument array with implied defaults
+    P2A_ARGS=("$SPRITE_PNG" -sw "$SPRITE_WIDTH" -sh "$SPRITE_HEIGHT")
+    if [ "$SPR8X16" = "true" ]; then
+        P2A_ARGS+=("-spr8x16")
+    fi
+    P2A_ARGS+=("-c" "${SPRITE_OUT}.c")
+
+    echo "Generating sprite asset from '${SPRITE_PNG}' (sw: $SPRITE_WIDTH, sh: $SPRITE_HEIGHT, 8x16: $SPR8X16)..."
+    $P2A "${P2A_ARGS[@]}"
 fi
 
 echo "Done!"

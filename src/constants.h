@@ -3,4 +3,11 @@
 
 #define TILE_SIZE 16
 
+typedef enum {
+    NORTH,
+    SOUTH,
+    EAST,
+    WEST
+} CardinalDirection;
+
 #endif
