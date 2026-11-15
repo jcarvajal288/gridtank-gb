@@ -169,6 +169,43 @@ void rotate_body_left(void) {
 }
 
 
+void rotate_turret_right(void) {
+    switch(turret_orientation) {
+        case NORTH:
+            turret_orientation = EAST;
+            break;
+        case EAST:
+            turret_orientation = SOUTH;
+            break;
+        case SOUTH:
+            turret_orientation = WEST;
+            break;
+        case WEST:
+            turret_orientation = NORTH;
+            break;
+    }
+    draw_tank();
+}
+
+void rotate_turret_left(void) {
+    switch(turret_orientation) {
+        case NORTH:
+            turret_orientation = WEST;
+            break;
+        case WEST:
+            turret_orientation = SOUTH;
+            break;
+        case SOUTH:
+            turret_orientation = EAST;
+            break;
+        case EAST:
+            turret_orientation = NORTH;
+            break;
+    }
+    draw_tank();
+}
+
+
 State handle_idle_state(void) {
     if (up_pressed()) {
         start_move_forward();
@@ -188,9 +225,11 @@ State handle_idle_state(void) {
         }
     } else if (right_pressed()) {
         rotate_body_right();
+        rotate_turret_right();
         return TURNING;
     } else if (left_pressed()) {
         rotate_body_left();
+        rotate_turret_left();
         return TURNING;
     }
     return IDLE;
@@ -230,43 +269,6 @@ State handle_moving_state(void) {
     }
     animation_frame_counter %= ANIMATION_FRAME_COUNT;
     return MOVING;
-}
-
-
-void rotate_turret_right(void) {
-    switch(turret_orientation) {
-        case NORTH:
-            turret_orientation = EAST;
-            break;
-        case EAST:
-            turret_orientation = SOUTH;
-            break;
-        case SOUTH:
-            turret_orientation = WEST;
-            break;
-        case WEST:
-            turret_orientation = NORTH;
-            break;
-    }
-    draw_tank();
-}
-
-void rotate_turret_left(void) {
-    switch(turret_orientation) {
-        case NORTH:
-            turret_orientation = WEST;
-            break;
-        case WEST:
-            turret_orientation = SOUTH;
-            break;
-        case SOUTH:
-            turret_orientation = EAST;
-            break;
-        case EAST:
-            turret_orientation = NORTH;
-            break;
-    }
-    draw_tank();
 }
 
 
