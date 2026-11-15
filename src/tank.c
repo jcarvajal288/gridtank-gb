@@ -54,11 +54,11 @@ void start_move_forward(void) {
     switch(orientation) {
         case NORTH:
             movement_destination.x = global_position.x;
-            movement_destination.y = global_position.y + TILE_SIZE;
+            movement_destination.y = global_position.y - TILE_SIZE;
             break;
         case SOUTH:
             movement_destination.x = global_position.x;
-            movement_destination.y = global_position.y - TILE_SIZE;
+            movement_destination.y = global_position.y + TILE_SIZE;
             break;
         case EAST:
             movement_destination.x = global_position.x + TILE_SIZE;
@@ -76,11 +76,11 @@ void start_move_backward(void) {
     switch(orientation) {
         case NORTH:
             movement_destination.x = global_position.x;
-            movement_destination.y = global_position.y - TILE_SIZE;
+            movement_destination.y = global_position.y + TILE_SIZE;
             break;
         case SOUTH:
             movement_destination.x = global_position.x;
-            movement_destination.y = global_position.y + TILE_SIZE;
+            movement_destination.y = global_position.y - TILE_SIZE;
             break;
         case EAST:
             movement_destination.x = global_position.x - TILE_SIZE;
@@ -153,7 +153,7 @@ State handle_idle_state(void) {
 State handle_moving_state(void) {
     if (movement_destination.y < global_position.y) { // move north
         global_position.y -= TANK_SPEED;
-        if (global_position.y >= movement_destination.y) {
+        if (global_position.y <= movement_destination.y) {
             global_position.y = movement_destination.y;
             return IDLE;
         }
