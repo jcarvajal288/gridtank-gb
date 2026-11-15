@@ -1,6 +1,7 @@
 #include "tank.h"
 
 #include <gb/gb.h>
+#include <gbdk/emu_debug.h>
 
 #include "../res/tank_body.h"
 
@@ -41,7 +42,7 @@ void init_tank(void) {
     global_position.y = 7 * TILE_SIZE;
     OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_WHITE, DMG_LITE_GRAY, DMG_BLACK);
     set_sprite_data(0, tank_body_TILE_COUNT, tank_body_tiles);
-    draw_tank_sprite(0);
+    draw_tank_sprite();
 }
 
 
@@ -91,6 +92,7 @@ State handle_idle_state(void) {
         rotate_body_left();
         return TURNING;
     }
+    return IDLE;
 }
 
 

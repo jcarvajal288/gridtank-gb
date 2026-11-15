@@ -1,6 +1,8 @@
 #include <gb/gb.h>
+#include <gbdk/emu_debug.h>
 
 #include "level.h"
+#include "input.h"
 #include "tank.h"
 
 void init_gfx(void) {
@@ -17,4 +19,10 @@ void main(void) {
 
     draw_level();
     init_tank();
+
+    while(1) {
+        update_input();
+        update_tank();
+        vsync();
+    }
 }

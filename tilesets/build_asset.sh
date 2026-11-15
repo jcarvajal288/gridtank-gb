@@ -10,7 +10,7 @@ usage() {
     echo "  --tileset <tileset.png>    Generate the standalone tileset (.c/.h) or use as reference"
     echo "  --map <map.png>            Generate the map array (.c/.h)"
     echo "  --map-dir <directory>      Generate map arrays for all .png files in the input directory"
-    echo "  --sprite <sprite.png>      Generate sprite asset (.c/.h) [defaults to -sw 16 -sh 16 -spr8x16]"
+    echo "  --sprite <sprite.png>      Generate sprite asset (.c/.h) [defaults to -sw 16 -sh 16 -spr8x16 -noflip]"
     echo "  --output-dir <directory>   Output directory for generation results"
     echo "  --sw <width>               Override default sprite width (default: 16)"
     echo "  --sh <height>              Override default sprite height (default: 16)"
@@ -213,14 +213,14 @@ if [ -n "$SPRITE_PNG" ]; then
     SPRITE_BASE=$(basename "$SPRITE_PNG" .png)
     SPRITE_OUT="${SPRITE_OUT_DIR}/${SPRITE_BASE}"
 
-    # Build argument array with implied defaults
-    P2A_ARGS=("$SPRITE_PNG" -sw "$SPRITE_WIDTH" -sh "$SPRITE_HEIGHT")
+    # Build argument array with implied defaults including -noflip
+    P2A_ARGS=("$SPRITE_PNG" -sw "$SPRITE_WIDTH" -sh "$SPRITE_HEIGHT" -noflip)
     if [ "$SPR8X16" = "true" ]; then
         P2A_ARGS+=("-spr8x16")
     fi
     P2A_ARGS+=("-c" "${SPRITE_OUT}.c")
 
-    echo "Generating sprite asset from '${SPRITE_PNG}' (sw: $SPRITE_WIDTH, sh: $SPRITE_HEIGHT, 8x16: $SPR8X16)..."
+    echo "Generating sprite asset from '${SPRITE_PNG}' (sw: $SPRITE_WIDTH, sh: $SPRITE_HEIGHT, 8x16: $SPR8X16, noflip: true)..."
     $P2A "${P2A_ARGS[@]}"
 fi
 
