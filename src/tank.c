@@ -4,6 +4,7 @@
 #include <gbdk/emu_debug.h>
 
 #include "../res/tank_body.h"
+#include "../res/tank_turret.h"
 
 #include "constants.h"
 #include "input.h"
@@ -21,44 +22,65 @@ typedef enum {
 State state = IDLE;
 
 Point8 global_position;
-CardinalDirection orientation;
+CardinalDirection body_orientation;
 CardinalDirection movement_direction;
+CardinalDirection turret_orientation;
 Point8 movement_destination;
 uint8_t animation_frame_counter;
 
 
-void draw_tank_sprite(void) {
-    switch(orientation) {
+void draw_tank(void) {
+    uint8_t base_sprite = 0;
+    uint8_t body_start = 0;
+    uint8_t turret_start = tank_body_TILE_COUNT;
+    switch(turret_orientation) {
         case NORTH:
-            move_metasprite_ex(tank_body_metasprites[animation_frame_counter], 0, 0, 0, global_position.x, global_position.y + 8);
+            base_sprite += move_metasprite_ex(tank_turret_metasprites[0], turret_start, 0, base_sprite, global_position.x, global_position.y + 8);
             break;
         case EAST:
-            move_metasprite_ex(tank_body_metasprites[animation_frame_counter + 4], 0, 0, 0, global_position.x, global_position.y + 8);
+            base_sprite += move_metasprite_ex(tank_turret_metasprites[1], turret_start, 0, base_sprite, global_position.x, global_position.y + 8);
             break;
         case SOUTH:
-            move_metasprite_flipy(tank_body_metasprites[animation_frame_counter], 0, 0, 0, global_position.x, global_position.y + 8);
+            base_sprite += move_metasprite_flipy(tank_turret_metasprites[0], turret_start, 0, base_sprite, global_position.x, global_position.y + 8);
             break;
         case WEST:
-            move_metasprite_flipx(tank_body_metasprites[animation_frame_counter + 4], 0, 0, 0, global_position.x, global_position.y + 8);
+            base_sprite += move_metasprite_flipx(tank_turret_metasprites[1], turret_start, 0, base_sprite, global_position.x, global_position.y + 8);
             break;
     }
+    switch(body_orientation) {
+        case NORTH:
+            base_sprite += move_metasprite_ex(tank_body_metasprites[animation_frame_counter], body_start, 0, base_sprite, global_position.x, global_position.y + 8);
+            break;
+        case EAST:
+            base_sprite += move_metasprite_ex(tank_body_metasprites[animation_frame_counter + 4], body_start, 0, base_sprite, global_position.x, global_position.y + 8);
+            break;
+        case SOUTH:
+            base_sprite += move_metasprite_flipy(tank_body_metasprites[animation_frame_counter], body_start, 0, base_sprite, global_position.x, global_position.y + 8);
+            break;
+        case WEST:
+            base_sprite += move_metasprite_flipx(tank_body_metasprites[animation_frame_counter + 4], body_start, 0, base_sprite, global_position.x, global_position.y + 8);
+            break;
+    }
+    hide_sprites_range(base_sprite, MAX_HARDWARE_SPRITES);
 }
 
 void init_tank(void) {
     state = IDLE;
-    orientation = NORTH;
+    body_orientation = NORTH;
+    turret_orientation = NORTH;
     animation_frame_counter = 0;
     global_position.x = 5 * TILE_SIZE;
     global_position.y = 7 * TILE_SIZE;
     movement_destination = global_position;
     OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_WHITE, DMG_LITE_GRAY, DMG_BLACK);
     set_sprite_data(0, tank_body_TILE_COUNT, tank_body_tiles);
-    draw_tank_sprite();
+    set_sprite_data(tank_body_TILE_COUNT, tank_turret_TILE_COUNT, tank_turret_tiles);
+    draw_tank();
 }
 
 
 void start_move_forward(void) {
-    switch(orientation) {
+    switch(body_orientation) {
         case NORTH:
             movement_destination.x = global_position.x;
             movement_destination.y = global_position.y - TILE_SIZE;
@@ -84,7 +106,7 @@ void start_move_forward(void) {
 
 
 void start_move_backward(void) {
-    switch(orientation) {
+    switch(body_orientation) {
         case NORTH:
             movement_destination.x = global_position.x;
             movement_destination.y = global_position.y + TILE_SIZE;
@@ -110,40 +132,40 @@ void start_move_backward(void) {
 
 
 void rotate_body_right(void) {
-    switch(orientation) {
+    switch(body_orientation) {
         case NORTH:
-            orientation = EAST;
+            body_orientation = EAST;
             break;
         case EAST:
-            orientation = SOUTH;
+            body_orientation = SOUTH;
             break;
         case SOUTH:
-            orientation = WEST;
+            body_orientation = WEST;
             break;
         case WEST:
-            orientation = NORTH;
+            body_orientation = NORTH;
             break;
     }
-    draw_tank_sprite();
+    draw_tank();
 }
 
 
 void rotate_body_left(void) {
-    switch(orientation) {
+    switch(body_orientation) {
         case NORTH:
-            orientation = WEST;
+            body_orientation = WEST;
             break;
         case WEST:
-            orientation = SOUTH;
+            body_orientation = SOUTH;
             break;
         case SOUTH:
-            orientation = EAST;
+            body_orientation = EAST;
             break;
         case EAST:
-            orientation = NORTH;
+            body_orientation = NORTH;
             break;
     }
-    draw_tank_sprite();
+    draw_tank();
 }
 
 
@@ -204,7 +226,7 @@ State handle_moving_state(void) {
             return IDLE;
         }
     }
-    if (orientation == movement_direction) {
+    if (body_orientation == movement_direction) {
         animation_frame_counter++;
     } else {
         animation_frame_counter--;
@@ -222,6 +244,6 @@ void update_tank(void) {
     } else if (state == TURNING && no_direction_pressed()) {
         state = IDLE;
     }
-    draw_tank_sprite();
+    draw_tank();
 }
 
