@@ -7,7 +7,7 @@
 #include "constants.h"
 
 #define SCREEN_TILE_WIDTH 20
-#define HARDWARE_TILE_SIZE 8
+#define HARDWARE_TILE_SIZE_EXP 3 // refers to 2^3 = 8 which is the background tile size
 #define CLEAR_TILESET_TILE 0x02
 
 void draw_level(void) {
@@ -20,13 +20,13 @@ unsigned char get_tile_index(uint8_t x, uint8_t y) {
 }
 
 bool is_tile_clear(Point8 tile) {
-    if (tile.x <= 0 || tile.x > 160) {
+    if (tile.x == 0 || tile.x > 160) {
         return false;
-    } else if (tile.y <= 0 || tile.y > 144) {
+    } else if (tile.y == 0 || tile.y > 144) {
         return false;
     }
-    uint8_t grid_x = tile.x / HARDWARE_TILE_SIZE - 1;
-    uint8_t grid_y = tile.y / HARDWARE_TILE_SIZE - 1;
+    uint8_t grid_x = (tile.x >> HARDWARE_TILE_SIZE_EXP) - 1;
+    uint8_t grid_y = (tile.y >> HARDWARE_TILE_SIZE_EXP) - 1;
     unsigned char tile_index = get_tile_index(grid_x, grid_y);
     return tile_index == CLEAR_TILESET_TILE;
 }
