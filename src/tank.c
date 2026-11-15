@@ -9,14 +9,18 @@
 #include "input.h"
 #include "point.h"
 
+#define TANK_SPEED 1
+
 typedef enum {
     IDLE,
+    MOVING,
     TURNING
 } State;
 State state = IDLE;
 
 Point8 global_position;
 CardinalDirection orientation;
+Point8 movement_destination;
 
 void draw_tank_sprite(void) {
     switch(orientation) {
@@ -43,6 +47,50 @@ void init_tank(void) {
     OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_WHITE, DMG_LITE_GRAY, DMG_BLACK);
     set_sprite_data(0, tank_body_TILE_COUNT, tank_body_tiles);
     draw_tank_sprite();
+}
+
+
+void start_move_forward(void) {
+    switch(orientation) {
+        case NORTH:
+            movement_destination.x = global_position.x;
+            movement_destination.y = global_position.y + TILE_SIZE;
+            break;
+        case SOUTH:
+            movement_destination.x = global_position.x;
+            movement_destination.y = global_position.y - TILE_SIZE;
+            break;
+        case EAST:
+            movement_destination.x = global_position.x + TILE_SIZE;
+            movement_destination.y = global_position.y;
+            break;
+        case WEST:
+            movement_destination.x = global_position.x - TILE_SIZE;
+            movement_destination.y = global_position.y;
+            break;
+    }
+}
+
+
+void start_move_backward(void) {
+    switch(orientation) {
+        case NORTH:
+            movement_destination.x = global_position.x;
+            movement_destination.y = global_position.y - TILE_SIZE;
+            break;
+        case SOUTH:
+            movement_destination.x = global_position.x;
+            movement_destination.y = global_position.y + TILE_SIZE;
+            break;
+        case EAST:
+            movement_destination.x = global_position.x - TILE_SIZE;
+            movement_destination.y = global_position.y;
+            break;
+        case WEST:
+            movement_destination.x = global_position.x + TILE_SIZE;
+            movement_destination.y = global_position.y;
+            break;
+    }
 }
 
 
@@ -85,7 +133,13 @@ void rotate_body_left(void) {
 
 
 State handle_idle_state(void) {
-    if (right_pressed()) {
+    if (up_pressed()) {
+        start_move_forward();
+        return MOVING;
+    } else if (down_pressed()) {
+        start_move_backward();
+        return MOVING;
+    } else if (right_pressed()) {
         rotate_body_right();
         return TURNING;
     } else if (left_pressed()) {
@@ -96,11 +150,44 @@ State handle_idle_state(void) {
 }
 
 
+State handle_moving_state(void) {
+    if (movement_destination.y < global_position.y) { // move north
+        global_position.y -= TANK_SPEED;
+        if (global_position.y >= movement_destination.y) {
+            global_position.y = movement_destination.y;
+            return IDLE;
+        }
+    } else if (movement_destination.y > global_position.y) { // move south
+        global_position.y += TANK_SPEED;
+        if (global_position.y >= movement_destination.y) {
+            global_position.y = movement_destination.y;
+            return IDLE;
+        }
+    } else if (movement_destination.x > global_position.x) { // move east
+        global_position.x += TANK_SPEED;
+        if (global_position.x >= movement_destination.x) {
+            global_position.x = movement_destination.x;
+            return IDLE;
+        }
+    } else if (movement_destination.x < global_position.x) { // move west
+        global_position.x -= TANK_SPEED;
+        if (global_position.x <= movement_destination.x) {
+            global_position.x = movement_destination.x;
+            return IDLE;
+        }
+    }
+    return MOVING;
+}
+
+
 void update_tank(void) {
     if (state == IDLE) {
         state = handle_idle_state();
+    } else if (state == MOVING) {
+        state = handle_moving_state();
     } else if (state == TURNING && no_direction_pressed()) {
         state = IDLE;
     }
+    draw_tank_sprite();
 }
 
