@@ -80,7 +80,6 @@ void start_move_forward(void) {
             movement_direction = WEST;
             break;
     }
-    EMU_printf("%d, %d\n", movement_destination.x, movement_destination.y);
 }
 
 
@@ -151,8 +150,20 @@ void rotate_body_left(void) {
 State handle_idle_state(void) {
     if (up_pressed()) {
         start_move_forward();
+        if (is_tile_clear(movement_destination)) {
+            return MOVING;
+        } else {
+            movement_destination = global_position;
+            return IDLE;
+        }
     } else if (down_pressed()) {
         start_move_backward();
+        if (is_tile_clear(movement_destination)) {
+            return MOVING;
+        } else {
+            movement_destination = global_position;
+            return IDLE;
+        }
     } else if (right_pressed()) {
         rotate_body_right();
         return TURNING;
@@ -160,13 +171,9 @@ State handle_idle_state(void) {
         rotate_body_left();
         return TURNING;
     }
-    if (!is_tile_clear(movement_destination)) {
-        movement_destination = global_position;
-        return IDLE;
-    }
-    if (global_position.x != movement_destination.x || global_position.y != movement_destination.y) {
-        return MOVING;
-    }
+    // if (global_position.x != movement_destination.x || global_position.y != movement_destination.y) {
+    //     return MOVING;
+    // }
     return IDLE;
 }
 
