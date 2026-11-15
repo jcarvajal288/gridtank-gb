@@ -193,9 +193,6 @@ State handle_idle_state(void) {
         rotate_body_left();
         return TURNING;
     }
-    // if (global_position.x != movement_destination.x || global_position.y != movement_destination.y) {
-    //     return MOVING;
-    // }
     return IDLE;
 }
 
@@ -236,14 +233,58 @@ State handle_moving_state(void) {
 }
 
 
+void rotate_turret_right(void) {
+    switch(turret_orientation) {
+        case NORTH:
+            turret_orientation = EAST;
+            break;
+        case EAST:
+            turret_orientation = SOUTH;
+            break;
+        case SOUTH:
+            turret_orientation = WEST;
+            break;
+        case WEST:
+            turret_orientation = NORTH;
+            break;
+    }
+    draw_tank();
+}
+
+void rotate_turret_left(void) {
+    switch(turret_orientation) {
+        case NORTH:
+            turret_orientation = WEST;
+            break;
+        case WEST:
+            turret_orientation = SOUTH;
+            break;
+        case SOUTH:
+            turret_orientation = EAST;
+            break;
+        case EAST:
+            turret_orientation = NORTH;
+            break;
+    }
+    draw_tank();
+}
+
+
 void update_tank(void) {
-    if (state == IDLE) {
+    if (b_pressed() && state == IDLE) { // turret rotation
+        if (right_just_pressed()) {
+            rotate_turret_right();
+        } else if (left_just_pressed()) {
+            rotate_turret_left();
+        }
+    } else if (state == IDLE) { // movement and turning
         state = handle_idle_state();
     } else if (state == MOVING) {
         state = handle_moving_state();
     } else if (state == TURNING && no_direction_pressed()) {
         state = IDLE;
     }
+
     draw_tank();
 }
 
