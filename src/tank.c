@@ -10,6 +10,7 @@
 #include "point.h"
 
 #define TANK_SPEED 1
+#define ANIMATION_FRAME_COUNT 4
 
 typedef enum {
     IDLE,
@@ -21,20 +22,21 @@ State state = IDLE;
 Point8 global_position;
 CardinalDirection orientation;
 Point8 movement_destination;
+uint8_t animation_frame_counter;
 
 void draw_tank_sprite(void) {
     switch(orientation) {
         case NORTH:
-            move_metasprite_ex(tank_body_metasprites[0], 0, 0, 0, global_position.x, global_position.y + 8);
+            move_metasprite_ex(tank_body_metasprites[animation_frame_counter], 0, 0, 0, global_position.x, global_position.y + 8);
             break;
         case EAST:
-            move_metasprite_ex(tank_body_metasprites[4], 0, 0, 0, global_position.x, global_position.y + 8);
+            move_metasprite_ex(tank_body_metasprites[animation_frame_counter + 4], 0, 0, 0, global_position.x, global_position.y + 8);
             break;
         case SOUTH:
-            move_metasprite_flipy(tank_body_metasprites[0], 0, 0, 0, global_position.x, global_position.y + 8);
+            move_metasprite_flipy(tank_body_metasprites[animation_frame_counter], 0, 0, 0, global_position.x, global_position.y + 8);
             break;
         case WEST:
-            move_metasprite_flipx(tank_body_metasprites[4], 0, 0, 0, global_position.x, global_position.y + 8);
+            move_metasprite_flipx(tank_body_metasprites[animation_frame_counter + 4], 0, 0, 0, global_position.x, global_position.y + 8);
             break;
     }
 }
@@ -42,6 +44,7 @@ void draw_tank_sprite(void) {
 void init_tank(void) {
     state = IDLE;
     orientation = NORTH;
+    animation_frame_counter = 0;
     global_position.x = 5 * TILE_SIZE;
     global_position.y = 7 * TILE_SIZE;
     OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_WHITE, DMG_LITE_GRAY, DMG_BLACK);
@@ -176,6 +179,8 @@ State handle_moving_state(void) {
             return IDLE;
         }
     }
+    animation_frame_counter++;
+    animation_frame_counter %= ANIMATION_FRAME_COUNT;
     return MOVING;
 }
 
