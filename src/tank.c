@@ -21,6 +21,7 @@ State state = IDLE;
 
 Point8 global_position;
 CardinalDirection orientation;
+CardinalDirection movement_direction;
 Point8 movement_destination;
 uint8_t animation_frame_counter;
 
@@ -58,18 +59,22 @@ void start_move_forward(void) {
         case NORTH:
             movement_destination.x = global_position.x;
             movement_destination.y = global_position.y - TILE_SIZE;
+            movement_direction = NORTH;
             break;
         case SOUTH:
             movement_destination.x = global_position.x;
             movement_destination.y = global_position.y + TILE_SIZE;
+            movement_direction = SOUTH;
             break;
         case EAST:
             movement_destination.x = global_position.x + TILE_SIZE;
             movement_destination.y = global_position.y;
+            movement_direction = EAST;
             break;
         case WEST:
             movement_destination.x = global_position.x - TILE_SIZE;
             movement_destination.y = global_position.y;
+            movement_direction = WEST;
             break;
     }
 }
@@ -80,18 +85,22 @@ void start_move_backward(void) {
         case NORTH:
             movement_destination.x = global_position.x;
             movement_destination.y = global_position.y + TILE_SIZE;
+            movement_direction = SOUTH;
             break;
         case SOUTH:
             movement_destination.x = global_position.x;
             movement_destination.y = global_position.y - TILE_SIZE;
+            movement_direction = NORTH;
             break;
         case EAST:
             movement_destination.x = global_position.x - TILE_SIZE;
             movement_destination.y = global_position.y;
+            movement_direction = WEST;
             break;
         case WEST:
             movement_destination.x = global_position.x + TILE_SIZE;
             movement_destination.y = global_position.y;
+            movement_direction = EAST;
             break;
     }
 }
@@ -179,7 +188,11 @@ State handle_moving_state(void) {
             return IDLE;
         }
     }
-    animation_frame_counter++;
+    if (orientation == movement_direction) {
+        animation_frame_counter++;
+    } else {
+        animation_frame_counter--;
+    }
     animation_frame_counter %= ANIMATION_FRAME_COUNT;
     return MOVING;
 }
