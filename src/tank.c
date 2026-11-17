@@ -21,47 +21,46 @@ typedef enum {
 } State;
 State state = IDLE;
 
-Point8 global_position;
-CardinalDirection body_orientation;
-CardinalDirection movement_direction;
-CardinalDirection turret_orientation;
-Point8 movement_destination;
-uint8_t animation_frame_counter;
+static Point8 global_position;
+static CardinalDirection body_orientation;
+static CardinalDirection movement_direction;
+static CardinalDirection turret_orientation;
+static Point8 movement_destination;
+static uint8_t animation_frame_counter;
 
 
-void draw_tank(void) {
-    uint8_t base_sprite = 0;
+uint8_t draw_tank(uint8_t sprite_index) {
     uint8_t body_start = 0;
     uint8_t turret_start = tank_body_TILE_COUNT;
     switch(turret_orientation) {
         case NORTH:
-            base_sprite += move_metasprite_ex(tank_turret_metasprites[0], turret_start, 0, base_sprite, global_position.x, global_position.y + 8);
+            sprite_index += move_metasprite_ex(tank_turret_metasprites[0], turret_start, 0, sprite_index, global_position.x, global_position.y + 8);
             break;
         case EAST:
-            base_sprite += move_metasprite_ex(tank_turret_metasprites[1], turret_start, 0, base_sprite, global_position.x, global_position.y + 8);
+            sprite_index += move_metasprite_ex(tank_turret_metasprites[1], turret_start, 0, sprite_index, global_position.x, global_position.y + 8);
             break;
         case SOUTH:
-            base_sprite += move_metasprite_flipy(tank_turret_metasprites[0], turret_start, 0, base_sprite, global_position.x, global_position.y + 8);
+            sprite_index += move_metasprite_flipy(tank_turret_metasprites[0], turret_start, 0, sprite_index, global_position.x, global_position.y + 8);
             break;
         case WEST:
-            base_sprite += move_metasprite_flipx(tank_turret_metasprites[1], turret_start, 0, base_sprite, global_position.x, global_position.y + 8);
+            sprite_index += move_metasprite_flipx(tank_turret_metasprites[1], turret_start, 0, sprite_index, global_position.x, global_position.y + 8);
             break;
     }
     switch(body_orientation) {
         case NORTH:
-            base_sprite += move_metasprite_ex(tank_body_metasprites[animation_frame_counter], body_start, 0, base_sprite, global_position.x, global_position.y + 8);
+            sprite_index += move_metasprite_ex(tank_body_metasprites[animation_frame_counter], body_start, 0, sprite_index, global_position.x, global_position.y + 8);
             break;
         case EAST:
-            base_sprite += move_metasprite_ex(tank_body_metasprites[animation_frame_counter + 4], body_start, 0, base_sprite, global_position.x, global_position.y + 8);
+            sprite_index += move_metasprite_ex(tank_body_metasprites[animation_frame_counter + 4], body_start, 0, sprite_index, global_position.x, global_position.y + 8);
             break;
         case SOUTH:
-            base_sprite += move_metasprite_flipy(tank_body_metasprites[animation_frame_counter], body_start, 0, base_sprite, global_position.x, global_position.y + 8);
+            sprite_index += move_metasprite_flipy(tank_body_metasprites[animation_frame_counter], body_start, 0, sprite_index, global_position.x, global_position.y + 8);
             break;
         case WEST:
-            base_sprite += move_metasprite_flipx(tank_body_metasprites[animation_frame_counter + 4], body_start, 0, base_sprite, global_position.x, global_position.y + 8);
+            sprite_index += move_metasprite_flipx(tank_body_metasprites[animation_frame_counter + 4], body_start, 0, sprite_index, global_position.x, global_position.y + 8);
             break;
     }
-    hide_sprites_range(base_sprite, MAX_HARDWARE_SPRITES);
+    return sprite_index;
 }
 
 void init_tank(void) {
@@ -75,7 +74,6 @@ void init_tank(void) {
     OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_WHITE, DMG_LITE_GRAY, DMG_BLACK);
     set_sprite_data(0, tank_body_TILE_COUNT, tank_body_tiles);
     set_sprite_data(tank_body_TILE_COUNT, tank_turret_TILE_COUNT, tank_turret_tiles);
-    draw_tank();
 }
 
 
@@ -146,7 +144,6 @@ void rotate_body_right(void) {
             body_orientation = NORTH;
             break;
     }
-    draw_tank();
 }
 
 
@@ -165,7 +162,6 @@ void rotate_body_left(void) {
             body_orientation = NORTH;
             break;
     }
-    draw_tank();
 }
 
 
@@ -184,7 +180,6 @@ void rotate_turret_right(void) {
             turret_orientation = NORTH;
             break;
     }
-    draw_tank();
 }
 
 void rotate_turret_left(void) {
@@ -202,7 +197,6 @@ void rotate_turret_left(void) {
             turret_orientation = NORTH;
             break;
     }
-    draw_tank();
 }
 
 
@@ -286,7 +280,5 @@ void update_tank(void) {
     } else if (state == TURNING && no_direction_pressed()) {
         state = IDLE;
     }
-
-    draw_tank();
 }
 
