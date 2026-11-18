@@ -33,7 +33,9 @@ void main(void) {
     while(1) {
         update_input();
         update_tank();
-        update_turret(get_tank_position());
+        if (!no_direction_pressed()) {
+            update_turret(get_tank_position());
+        }
         draw();
         vsync();
     }
