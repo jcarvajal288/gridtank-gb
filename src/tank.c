@@ -257,9 +257,9 @@ State handle_moving_state(void) {
         }
     }
     if (body_orientation == movement_direction) {
-        animation_frame_counter++;
-    } else {
         animation_frame_counter--;
+    } else {
+        animation_frame_counter++;
     }
     animation_frame_counter %= ANIMATION_FRAME_COUNT;
     return MOVING;
