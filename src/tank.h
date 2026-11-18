@@ -3,8 +3,11 @@
 
 #include <stdint.h>
 
+#include "point.h"
+
 void init_tank(void);
 uint8_t draw_tank(uint8_t);
 void update_tank(void);
+Point8* get_tank_position(void);
 
 #endif

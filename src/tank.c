@@ -282,3 +282,7 @@ void update_tank(void) {
     }
 }
 
+
+Point8* get_tank_position(void) {
+    return &global_position;
+}

@@ -23,7 +23,24 @@ void init_turret(void) {
 
 
 uint8_t draw_turret(uint8_t sprite_index) {
-    sprite_index += move_metasprite_ex(enemy_turret_metasprites[0], ENEMY_TILE_START_INDEX, 0, sprite_index, global_position.x, global_position.y + 8);
+    switch(orientation) {
+        case NORTH:
+            sprite_index += move_metasprite_ex(enemy_turret_metasprites[0], ENEMY_TILE_START_INDEX, 0, sprite_index, global_position.x, global_position.y + 8);
+            break;
+        case EAST:
+            sprite_index += move_metasprite_ex(enemy_turret_metasprites[1], ENEMY_TILE_START_INDEX, 0, sprite_index, global_position.x, global_position.y + 8);
+            break;
+        case SOUTH:
+            sprite_index += move_metasprite_flipy(enemy_turret_metasprites[0], ENEMY_TILE_START_INDEX, 0, sprite_index, global_position.x, global_position.y + 8);
+            break;
+        case WEST:
+            sprite_index += move_metasprite_flipx(enemy_turret_metasprites[1], ENEMY_TILE_START_INDEX, 0, sprite_index, global_position.x, global_position.y + 8);
+            break;
+    }
     return sprite_index;
 }
 
+
+void update_turret(Point8* player_position) {
+    orientation = nearest_cardinal_to(&global_position, player_position);
+}
