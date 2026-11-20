@@ -1,0 +1,5 @@
+_ fire bullet from tank
+_ fire bullet from turret
+_ work out 8-segment timer
+_ add pits
+_ open pits through timer

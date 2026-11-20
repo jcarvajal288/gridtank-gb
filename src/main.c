@@ -15,6 +15,9 @@ void init_gfx(void) {
     SHOW_SPRITES;
     SPRITES_8x16;
     HIDE_WIN;
+
+    init_tank();
+    init_turret();
 }
 
 void draw(void) {
@@ -28,8 +31,6 @@ void main(void) {
     init_gfx();
 
     draw_level();
-    init_tank();
-    init_turret();
 
     add_turret(5, 5);
     add_turret(4, 1);
