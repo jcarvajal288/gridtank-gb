@@ -20,6 +20,32 @@ void init_gfx(void) {
     init_turret();
 }
 
+void create_enemies(void) {
+    CardinalDirection pattern1[NUM_GAME_TICKS] = {
+        NORTH,
+        NORTH,
+        EAST,
+        EAST,
+        SOUTH,
+        SOUTH,
+        WEST,
+        WEST
+    };
+    add_turret(5, 5, pattern1);
+
+    CardinalDirection pattern2[NUM_GAME_TICKS] = {
+        EAST,
+        EAST,
+        EAST,
+        EAST,
+        SOUTH,
+        SOUTH,
+        SOUTH,
+        SOUTH,
+    };
+    add_turret(4, 1, pattern2);
+}
+
 void draw(void) {
     uint8_t sprite_index = 0;
     sprite_index = draw_tank(sprite_index);
@@ -29,18 +55,22 @@ void draw(void) {
 
 void main(void) {
     init_gfx();
-
     draw_level();
+    create_enemies();
 
-    add_turret(5, 5);
-    add_turret(4, 1);
-
+    uint8_t frame_counter = 0;
+    uint8_t current_tick = 0;
     while(1) {
         update_input();
         update_tank();
-        if (!no_direction_pressed()) {
-            update_enemies(get_tank_position());
+
+        frame_counter++;
+        if (frame_counter >= GAME_TICK_FRAME_LENGTH) {
+            update_enemies(current_tick++);
+            current_tick %= NUM_GAME_TICKS;
+            frame_counter = 0;
         }
+
         draw();
         vsync();
     }

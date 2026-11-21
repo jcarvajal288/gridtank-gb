@@ -36,6 +36,6 @@ uint8_t draw_turret(EnemyTurret* turret, uint8_t sprite_index) {
 }
 
 
-void update_turret(EnemyTurret* turret, Point8* player_position) {
-    turret->orientation = nearest_cardinal_to(&turret->position, player_position);
+void update_turret(EnemyTurret* turret, uint8_t current_tick) {
+    turret->orientation = turret->pattern[current_tick];
 }
