@@ -13,6 +13,7 @@
 
 #define TANK_SPEED 1
 #define ANIMATION_FRAME_COUNT 4
+#define ANIMATION_SPEED 2
 
 typedef enum {
     IDLE,
@@ -230,7 +231,7 @@ State handle_idle_state(void) {
 }
 
 
-State handle_moving_state(void) {
+State handle_moving_state(uint8_t frame_counter) {
     if (movement_destination.y < global_position.y) { // move north
         global_position.y -= TANK_SPEED;
         if (global_position.y <= movement_destination.y) {
@@ -256,17 +257,19 @@ State handle_moving_state(void) {
             return IDLE;
         }
     }
-    if (body_orientation == movement_direction) {
-        animation_frame_counter--;
-    } else {
-        animation_frame_counter++;
+    if (frame_counter % ANIMATION_SPEED == 0) {
+        if (body_orientation == movement_direction) {
+            animation_frame_counter--;
+        } else {
+            animation_frame_counter++;
+        }
     }
     animation_frame_counter %= ANIMATION_FRAME_COUNT;
     return MOVING;
 }
 
 
-void update_tank(void) {
+void update_tank(uint8_t frame_counter) {
     if (b_pressed() && state == IDLE) { // turret rotation
         if (right_just_pressed()) {
             rotate_turret_right();
@@ -276,7 +279,7 @@ void update_tank(void) {
     } else if (state == IDLE) { // movement and turning
         state = handle_idle_state();
     } else if (state == MOVING) {
-        state = handle_moving_state();
+        state = handle_moving_state(frame_counter);
     } else if (state == TURNING && no_direction_pressed()) {
         state = IDLE;
     }

@@ -62,7 +62,7 @@ void main(void) {
     uint8_t current_tick = 0;
     while(1) {
         update_input();
-        update_tank();
+        update_tank(frame_counter);
 
         frame_counter++;
         if (frame_counter >= GAME_TICK_FRAME_LENGTH) {
