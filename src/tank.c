@@ -289,3 +289,9 @@ void update_tank(uint8_t frame_counter) {
 Point8* get_tank_position(void) {
     return &global_position;
 }
+
+
+void destroy_tank(void) {
+    global_position.x = 0;
+    global_position.y = 0;
+}

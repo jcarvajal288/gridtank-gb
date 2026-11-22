@@ -55,15 +55,15 @@ void check_for_shot_at_tank(void) {
         
         if (tank_tile_x == enemy_tile_x) {
             if (tank_tile_y < enemy_tile_y && enemy_orientation == NORTH) {
-                EMU_printf("Fire NORTH\n");
+                destroy_tank();
             } else if (tank_tile_y > enemy_tile_y && enemy_orientation == SOUTH) {
-                EMU_printf("Fire SOUTH\n");
+                destroy_tank();
             }
         } else if (tank_tile_y == enemy_tile_y) {
             if (tank_tile_x < enemy_tile_x && enemy_orientation == WEST) {
-                EMU_printf("Fire WEST\n");
+                destroy_tank();
             } else if (tank_tile_x > enemy_tile_x && enemy_orientation == EAST) {
-                EMU_printf("Fire EAST\n");
+                destroy_tank();
             }
         }
     }
