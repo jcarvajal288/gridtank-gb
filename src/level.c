@@ -7,7 +7,6 @@
 #include "constants.h"
 
 #define SCREEN_TILE_WIDTH 20
-#define HARDWARE_TILE_SIZE_EXP 3 // refers to 2^3 = 8 which is the background tile size
 #define CLEAR_TILESET_TILE 0x02
 
 void draw_level(void) {

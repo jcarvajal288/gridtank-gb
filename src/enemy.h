@@ -8,8 +8,9 @@ typedef union {
 } Enemy;
 
 void add_turret(uint8_t, uint8_t, CardinalDirection*);
-
 void update_enemies(uint8_t);
 uint8_t draw_enemies(uint8_t);
+
+void check_for_shot_at_tank(void);
 
 #endif

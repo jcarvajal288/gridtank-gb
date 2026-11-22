@@ -71,6 +71,8 @@ void main(void) {
             frame_counter = 0;
         }
 
+        check_for_shot_at_tank();
+
         draw();
         vsync();
     }
