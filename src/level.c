@@ -18,6 +18,11 @@ unsigned char get_tile_index(uint8_t x, uint8_t y) {
     return testlevel_map[x + (y * SCREEN_TILE_WIDTH)];
 }
 
+bool is_tile_clear_xy(uint8_t x, uint8_t y) {
+    unsigned char tile_index = get_tile_index(x, y);
+    return tile_index == CLEAR_TILESET_TILE;
+}
+
 bool is_tile_clear(Point8 tile) {
     if (tile.x == 0 || tile.x > 160) {
         return false;

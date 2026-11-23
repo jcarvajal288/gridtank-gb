@@ -1,7 +1,9 @@
 #include "enemy.h"
 
 #include <gbdk/emu_debug.h>
+#include <stdbool.h>
 
+#include "level.h"
 #include "tank.h"
 
 #define MAX_ENEMIES 2
@@ -30,17 +32,44 @@ void add_turret(uint8_t x, uint8_t y, CardinalDirection* pattern) {
 
 
 void update_enemies(uint8_t current_tick) {
-    for(uint8_t i = 0; i < num_enemies; i++) { // TODO: change to use advancing pointer
-        update_turret(&enemies[i].enemy_turret, current_tick);
+    for(Enemy *enemy = enemies, *end = enemies + num_enemies; enemy < end; enemy++) { 
+        update_turret(&enemy->enemy_turret, current_tick);
     }
 }
 
 
 uint8_t draw_enemies(uint8_t sprite_index) {
-    for(uint8_t i = 0; i < num_enemies; i++) { // TODO: change to use advancing pointer
-        sprite_index = draw_turret(&enemies[i].enemy_turret, sprite_index);
+    for(Enemy *enemy = enemies, *end = enemies + num_enemies; enemy < end; enemy++) { 
+        sprite_index = draw_turret(&enemy->enemy_turret, sprite_index);
     }
     return sprite_index;
+}
+
+
+// only works correctly for horizontal or vertical lines
+bool line_clear(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2) {
+    if (x1 == x2)  {
+        if (y1 < y2) {
+            for (uint8_t y = y1; y < y2; y++) {
+                if (!is_tile_clear_xy(x1, y)) return false;
+            }
+        } else {
+            for (uint8_t y = y2; y < y1; y++) {
+                if (!is_tile_clear_xy(x1, y)) return false;
+            }
+        }
+    } else if (y1 == y2) {
+        if (x1 < x2) {
+            for (uint8_t x = x1; x < x2; x++) {
+                if (!is_tile_clear_xy(x, y1)) return false;
+            }
+        } else {
+            for (uint8_t x = x2; x < x1; x++) {
+                if (!is_tile_clear_xy(x, y1)) return false;
+            }
+        }
+    }
+    return true;
 }
 
 
@@ -53,18 +82,22 @@ void check_for_shot_at_tank(void) {
         uint8_t enemy_tile_y = enemy->enemy_turret.position.y >> HARDWARE_TILE_SIZE_EXP;
         uint8_t enemy_orientation = enemy->enemy_turret.orientation;
         
+        bool tank_in_line_of_sight = false;
         if (tank_tile_x == enemy_tile_x) {
             if (tank_tile_y < enemy_tile_y && enemy_orientation == NORTH) {
-                destroy_tank();
+                tank_in_line_of_sight = true;
             } else if (tank_tile_y > enemy_tile_y && enemy_orientation == SOUTH) {
-                destroy_tank();
+                tank_in_line_of_sight = true;
             }
         } else if (tank_tile_y == enemy_tile_y) {
             if (tank_tile_x < enemy_tile_x && enemy_orientation == WEST) {
-                destroy_tank();
+                tank_in_line_of_sight = true;
             } else if (tank_tile_x > enemy_tile_x && enemy_orientation == EAST) {
-                destroy_tank();
+                tank_in_line_of_sight = true;
             }
+        }
+        if (tank_in_line_of_sight && line_clear(tank_tile_x, tank_tile_y, enemy_tile_x, enemy_tile_y)) {
+            destroy_tank();
         }
     }
 }
