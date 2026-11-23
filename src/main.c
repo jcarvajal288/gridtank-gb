@@ -18,6 +18,7 @@ void init_gfx(void) {
 
     init_tank();
     init_turret();
+    init_enemy_tank();
 }
 
 void create_enemies(void) {
@@ -44,6 +45,8 @@ void create_enemies(void) {
         SOUTH,
     };
     add_turret(4, 1, pattern2);
+
+    add_tank(8, 3);
 }
 
 void draw(void) {
