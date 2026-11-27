@@ -22,7 +22,7 @@ void init_gfx(void) {
 }
 
 void create_enemies(void) {
-    CardinalDirection pattern1[NUM_GAME_TICKS] = {
+    CardinalDirection pattern1[NUM_TURRET_TICKS] = {
         NORTH,
         NORTH,
         EAST,
@@ -34,7 +34,7 @@ void create_enemies(void) {
     };
     add_turret(5, 5, pattern1);
 
-    CardinalDirection pattern2[NUM_GAME_TICKS] = {
+    CardinalDirection pattern2[NUM_TURRET_TICKS] = {
         EAST,
         EAST,
         EAST,
@@ -46,7 +46,7 @@ void create_enemies(void) {
     };
     add_turret(4, 1, pattern2);
 
-    TankDirection pattern3[16] = {
+    TankDirection pattern3[NUM_TANK_TICKS] = {
         ROTATE_RIGHT,
         ROTATE_RIGHT,
         ROTATE_RIGHT,
@@ -88,7 +88,6 @@ void main(void) {
         frame_counter++;
         if (frame_counter >= GAME_TICK_FRAME_LENGTH) {
             update_enemies(current_tick++);
-            current_tick %= NUM_GAME_TICKS;
             frame_counter = 0;
         }
 

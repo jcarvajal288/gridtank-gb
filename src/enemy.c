@@ -22,7 +22,7 @@ void add_turret(uint8_t x, uint8_t y, CardinalDirection* pattern) {
     };
 
     if (pattern) {
-        for (uint8_t i = 0; i < NUM_GAME_TICKS; i++) {
+        for (uint8_t i = 0; i < NUM_TURRET_TICKS; i++) {
             turret.pattern[i] = pattern[i];
         }
     }
@@ -43,6 +43,12 @@ void add_tank(uint8_t x, uint8_t y, TankDirection* pattern) {
         .turret_orientation = NORTH,
         .animation_frame_counter = 0
     };
+
+    if (pattern) {
+        for (uint8_t i = 0; i < NUM_TANK_TICKS; i++) {
+            tank.pattern[i] = pattern[i];
+        }
+    }
 
     uint8_t i = num_enemies++;
     enemies[i].type = TANK;

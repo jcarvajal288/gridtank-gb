@@ -37,5 +37,5 @@ uint8_t draw_turret(EnemyTurret* turret, uint8_t sprite_index) {
 
 
 void update_turret(EnemyTurret* turret, uint8_t current_tick) {
-    turret->orientation = turret->pattern[current_tick];
+    turret->orientation = turret->pattern[current_tick % NUM_TURRET_TICKS];
 }

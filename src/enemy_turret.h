@@ -10,7 +10,7 @@
 typedef struct {
     Point8 position;
     CardinalDirection orientation;
-    CardinalDirection pattern[NUM_GAME_TICKS];
+    CardinalDirection pattern[NUM_TURRET_TICKS];
 } EnemyTurret;
 
 
