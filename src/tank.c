@@ -259,7 +259,7 @@ State handle_moving_state(uint8_t frame_counter) {
     }
     if (frame_counter % ANIMATION_SPEED == 0) {
         if (body_orientation == movement_direction) {
-            animation_frame_counter--;
+            animation_frame_counter--; // this direction is 'backward' but it animates better this way
         } else {
             animation_frame_counter++;
         }

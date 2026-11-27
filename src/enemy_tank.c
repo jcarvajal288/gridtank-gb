@@ -7,7 +7,7 @@
 
 #define ENEMY_TANK_SPEED 1
 #define ENEMY_TANK_ANIMATION_FRAME_COUNT 4
-#define ENEMY_TANK_ANIMATION_SPEED 2
+#define ENEMY_TANK_ANIMATION_SPEED 3
 #define ENEMY_TANK_START_INDEX 48
 #define ENEMY_TANK_TURRET_START_INDEX ENEMY_TANK_START_INDEX + enemy_tank_body_TILE_COUNT
 
@@ -200,9 +200,9 @@ void move_enemy_tank(EnemyTank* tank, uint8_t frame_counter) {
     }
     if (frame_counter % ENEMY_TANK_ANIMATION_SPEED == 0) {
         if (tank->body_orientation == tank->movement_direction) {
-            tank->animation_frame_counter--;
-        } else {
             tank->animation_frame_counter++;
+        } else {
+            tank->animation_frame_counter--;
         }
     }
     tank->animation_frame_counter %= ENEMY_TANK_ANIMATION_FRAME_COUNT;
