@@ -11,6 +11,7 @@ typedef struct {
     Point8 position;
     CardinalDirection body_orientation;
     CardinalDirection turret_orientation;
+    CardinalDirection movement_direction;
     CardinalDirection pattern[NUM_GAME_TICKS];
     Point8 movement_destination;
     uint8_t animation_frame_counter;

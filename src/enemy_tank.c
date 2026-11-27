@@ -48,6 +48,129 @@ uint8_t draw_enemy_tank(EnemyTank* tank, uint8_t sprite_index) {
     return sprite_index;
 }
 
+void start_move_forward(EnemyTank* tank) {
+    switch(tank->body_orientation) {
+        case NORTH:
+            tank->movement_destination.x = tank->position.x;
+            tank->movement_destination.y = tank->position.y - TILE_SIZE;
+            tank->movement_direction = NORTH;
+            break;
+        case SOUTH:
+            tank->movement_destination.x = tank->position.x;
+            tank->movement_destination.y = tank->position.y + TILE_SIZE;
+            tank->movement_direction = SOUTH;
+            break;
+        case EAST:
+            tank->movement_destination.x = tank->position.x + TILE_SIZE;
+            tank->movement_destination.y = tank->position.y;
+            tank->movement_direction = EAST;
+            break;
+        case WEST:
+            tank->movement_destination.x = tank->position.x - TILE_SIZE;
+            tank->movement_destination.y = tank->position.y;
+            tank->movement_direction = WEST;
+            break;
+    }
+}
+
+
+void start_move_backward(EnemyTank* tank) {
+    switch(tank->body_orientation) {
+        case NORTH:
+            tank->movement_destination.x = tank->position.x;
+            tank->movement_destination.y = tank->position.y + TILE_SIZE;
+            tank->movement_direction = SOUTH;
+            break;
+        case SOUTH:
+            tank->movement_destination.x = tank->position.x;
+            tank->movement_destination.y = tank->position.y - TILE_SIZE;
+            tank->movement_direction = NORTH;
+            break;
+        case EAST:
+            tank->movement_destination.x = tank->position.x - TILE_SIZE;
+            tank->movement_destination.y = tank->position.y;
+            tank->movement_direction = WEST;
+            break;
+        case WEST:
+            tank->movement_destination.x = tank->position.x + TILE_SIZE;
+            tank->movement_destination.y = tank->position.y;
+            tank->movement_direction = EAST;
+            break;
+    }
+}
+
+
+void rotate_body_right(EnemyTank* tank) {
+    switch(tank->body_orientation) {
+        case NORTH:
+            tank->body_orientation = EAST;
+            break;
+        case EAST:
+            tank->body_orientation = SOUTH;
+            break;
+        case SOUTH:
+            tank->body_orientation = WEST;
+            break;
+        case WEST:
+            tank->body_orientation = NORTH;
+            break;
+    }
+}
+
+
+void rotate_body_left(EnemyTank* tank) {
+    switch(tank->body_orientation) {
+        case NORTH:
+            tank->body_orientation = WEST;
+            break;
+        case WEST:
+            tank->body_orientation = SOUTH;
+            break;
+        case SOUTH:
+            tank->body_orientation = EAST;
+            break;
+        case EAST:
+            tank->body_orientation = NORTH;
+            break;
+    }
+}
+
+
+void rotate_turret_right(EnemyTank* tank) {
+    switch(tank->turret_orientation) {
+        case NORTH:
+            tank->turret_orientation = EAST;
+            break;
+        case EAST:
+            tank->turret_orientation = SOUTH;
+            break;
+        case SOUTH:
+            tank->turret_orientation = WEST;
+            break;
+        case WEST:
+            tank->turret_orientation = NORTH;
+            break;
+    }
+}
+
+void rotate_turret_left(EnemyTank* tank) {
+    switch(tank->turret_orientation) {
+        case NORTH:
+            tank->turret_orientation = WEST;
+            break;
+        case WEST:
+            tank->turret_orientation = SOUTH;
+            break;
+        case SOUTH:
+            tank->turret_orientation = EAST;
+            break;
+        case EAST:
+            tank->turret_orientation = NORTH;
+            break;
+    }
+}
+
+
 void update_enemy_tank(EnemyTank* tank, uint8_t current_tick) {
 
 }
