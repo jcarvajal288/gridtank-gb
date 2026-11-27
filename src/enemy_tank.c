@@ -5,6 +5,9 @@
 
 #include <gb/gb.h>
 
+#define ENEMY_TANK_SPEED 1
+#define ENEMY_TANK_ANIMATION_FRAME_COUNT 4
+#define ENEMY_TANK_ANIMATION_SPEED 2
 #define ENEMY_TANK_START_INDEX 48
 #define ENEMY_TANK_TURRET_START_INDEX ENEMY_TANK_START_INDEX + enemy_tank_body_TILE_COUNT
 
@@ -173,25 +176,65 @@ void enemy_tank_rotate_body_left(EnemyTank* tank) {
 }
 
 
-void update_enemy_tank(EnemyTank* tank, uint8_t current_tick) {
-    switch(tank->pattern[current_tick % NUM_TANK_TICKS]) {
-        case MOVE_FORWARD:
-            enemy_tank_move_forward(tank);
-            break;
-        case MOVE_BACKWARD:
-            enemy_tank_move_backward(tank);
-            break;
-        case ROTATE_LEFT:
-            enemy_tank_rotate_body_left(tank);
-            break;
-        case ROTATE_RIGHT:
-            enemy_tank_rotate_body_right(tank);
-            break;
-        case ROTATE_TURRET_LEFT:
-            enemy_tank_rotate_turret_left(tank);
-            break;
-        case ROTATE_TURRET_RIGHT:
-            enemy_tank_rotate_turret_right(tank);
-            break;
+void move_enemy_tank(EnemyTank* tank, uint8_t frame_counter) {
+    if (tank->movement_destination.y < tank->position.y) { // move north
+        tank->position.y -= ENEMY_TANK_SPEED;
+        if (tank->position.y <= tank->movement_destination.y) {
+            tank->position.y = tank->movement_destination.y;
+        }
+    } else if (tank->movement_destination.y > tank->position.y) { // move south
+        tank->position.y += ENEMY_TANK_SPEED;
+        if (tank->position.y >= tank->movement_destination.y) {
+            tank->position.y = tank->movement_destination.y;
+        }
+    } else if (tank->movement_destination.x > tank->position.x) { // move east
+        tank->position.x += ENEMY_TANK_SPEED;
+        if (tank->position.x >= tank->movement_destination.x) {
+            tank->position.x = tank->movement_destination.x;
+        }
+    } else if (tank->movement_destination.x < tank->position.x) { // move west
+        tank->position.x -= ENEMY_TANK_SPEED;
+        if (tank->position.x <= tank->movement_destination.x) {
+            tank->position.x = tank->movement_destination.x;
+        }
+    }
+    if (frame_counter % ENEMY_TANK_ANIMATION_SPEED == 0) {
+        if (tank->body_orientation == tank->movement_direction) {
+            tank->animation_frame_counter--;
+        } else {
+            tank->animation_frame_counter++;
+        }
+    }
+    tank->animation_frame_counter %= ENEMY_TANK_ANIMATION_FRAME_COUNT;
+}
+
+
+void update_enemy_tank(EnemyTank* tank, uint8_t current_tick, uint8_t frame_counter) {
+    static uint8_t old_tick = 255;
+    if (old_tick != current_tick) {
+        switch(tank->pattern[current_tick % NUM_TANK_TICKS]) {
+            case MOVE_FORWARD:
+                enemy_tank_move_forward(tank);
+                break;
+            case MOVE_BACKWARD:
+                enemy_tank_move_backward(tank);
+                break;
+            case ROTATE_LEFT:
+                enemy_tank_rotate_body_left(tank);
+                break;
+            case ROTATE_RIGHT:
+                enemy_tank_rotate_body_right(tank);
+                break;
+            case ROTATE_TURRET_LEFT:
+                enemy_tank_rotate_turret_left(tank);
+                break;
+            case ROTATE_TURRET_RIGHT:
+                enemy_tank_rotate_turret_right(tank);
+                break;
+        }
+        old_tick = current_tick;
+    }
+    if (tank->position.x != tank->movement_destination.x || tank->position.y != tank->movement_destination.y) {
+        move_enemy_tank(tank, frame_counter);
     }
 }

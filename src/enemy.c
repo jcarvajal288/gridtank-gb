@@ -41,6 +41,7 @@ void add_tank(uint8_t x, uint8_t y, TankDirection* pattern) {
         .position = { .x = x * TILE_SIZE, .y = y * TILE_SIZE},
         .body_orientation = NORTH,
         .turret_orientation = NORTH,
+        .movement_destination = { .x = x * TILE_SIZE, .y = y * TILE_SIZE},
         .animation_frame_counter = 0
     };
 
@@ -56,12 +57,12 @@ void add_tank(uint8_t x, uint8_t y, TankDirection* pattern) {
 }
 
 
-void update_enemies(uint8_t current_tick) {
+void update_enemies(uint8_t current_tick, uint8_t frame_counter) {
     for(Enemy *enemy = enemies, *end = enemies + num_enemies; enemy < end; enemy++) { 
         if (enemy->type == TURRET) {
             update_turret(&enemy->data.enemy_turret, current_tick);
         } else if (enemy->type == TANK) {
-            update_enemy_tank(&enemy->data.enemy_tank, current_tick);
+            update_enemy_tank(&enemy->data.enemy_tank, current_tick, frame_counter);
         }
     }
 }

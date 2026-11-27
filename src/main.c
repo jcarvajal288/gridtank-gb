@@ -48,21 +48,21 @@ void create_enemies(void) {
 
     TankDirection pattern3[NUM_TANK_TICKS] = {
         ROTATE_RIGHT,
+        MOVE_FORWARD,
+        MOVE_FORWARD,
+        MOVE_FORWARD,
         ROTATE_RIGHT,
+        MOVE_FORWARD,
+        MOVE_FORWARD,
         ROTATE_RIGHT,
+        MOVE_FORWARD,
+        MOVE_FORWARD,
+        MOVE_FORWARD,
         ROTATE_RIGHT,
-        ROTATE_RIGHT,
-        ROTATE_RIGHT,
-        ROTATE_RIGHT,
-        ROTATE_RIGHT,
-        ROTATE_RIGHT,
-        ROTATE_RIGHT,
-        ROTATE_RIGHT,
-        ROTATE_RIGHT,
-        ROTATE_RIGHT,
-        ROTATE_RIGHT,
-        ROTATE_RIGHT,
-        ROTATE_RIGHT,
+        MOVE_FORWARD,
+        MOVE_FORWARD,
+        ROTATE_TURRET_RIGHT,
+        ROTATE_TURRET_LEFT,
     };
     add_tank(6, 3, pattern3);
 }
@@ -87,9 +87,10 @@ void main(void) {
 
         frame_counter++;
         if (frame_counter >= GAME_TICK_FRAME_LENGTH) {
-            update_enemies(current_tick++);
+            current_tick++;
             frame_counter = 0;
         }
+        update_enemies(current_tick, frame_counter);
 
         check_for_shot_at_tank();
 

@@ -29,6 +29,6 @@ typedef struct {
 
 void init_enemy_tank(void);
 uint8_t draw_enemy_tank(EnemyTank*, uint8_t);
-void update_enemy_tank(EnemyTank*, uint8_t);
+void update_enemy_tank(EnemyTank*, uint8_t, uint8_t);
 
 #endif
