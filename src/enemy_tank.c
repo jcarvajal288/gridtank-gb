@@ -36,16 +36,16 @@ uint8_t draw_enemy_tank(EnemyTank* tank, uint8_t sprite_index) {
     }
     switch(tank->body_orientation) {
         case NORTH:
-            sprite_index += move_metasprite_ex(enemy_tank_body_metasprites[0], ENEMY_TANK_START_INDEX, 0, sprite_index, x, y);
+            sprite_index += move_metasprite_ex(enemy_tank_body_metasprites[tank->animation_frame_counter], ENEMY_TANK_START_INDEX, 0, sprite_index, x, y);
             break;
         case EAST:
-            sprite_index += move_metasprite_ex(enemy_tank_body_metasprites[4], ENEMY_TANK_START_INDEX, 0, sprite_index, x, y);
+            sprite_index += move_metasprite_ex(enemy_tank_body_metasprites[tank->animation_frame_counter + 4], ENEMY_TANK_START_INDEX, 0, sprite_index, x, y);
             break;
         case SOUTH:
-            sprite_index += move_metasprite_flipy(enemy_tank_body_metasprites[0], ENEMY_TANK_START_INDEX, 0, sprite_index, x, y);
+            sprite_index += move_metasprite_flipy(enemy_tank_body_metasprites[tank->animation_frame_counter], ENEMY_TANK_START_INDEX, 0, sprite_index, x, y);
             break;
         case WEST:
-            sprite_index += move_metasprite_flipx(enemy_tank_body_metasprites[4], ENEMY_TANK_START_INDEX, 0, sprite_index, x, y);
+            sprite_index += move_metasprite_flipx(enemy_tank_body_metasprites[tank->animation_frame_counter + 4], ENEMY_TANK_START_INDEX, 0, sprite_index, x, y);
             break;
     }
     return sprite_index;
