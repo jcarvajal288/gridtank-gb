@@ -32,7 +32,7 @@ void add_turret(uint8_t x, uint8_t y, CardinalDirection* pattern) {
     enemies[i].data.enemy_turret = turret;
 }
 
-void add_tank(uint8_t x, uint8_t y) {
+void add_tank(uint8_t x, uint8_t y, TankDirection* pattern) {
     if (num_enemies >= MAX_ENEMIES) {
         return;
     }

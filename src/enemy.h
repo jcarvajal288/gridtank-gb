@@ -20,7 +20,7 @@ typedef struct {
 } Enemy;
 
 void add_turret(uint8_t, uint8_t, CardinalDirection*);
-void add_tank(uint8_t, uint8_t);
+void add_tank(uint8_t, uint8_t, TankDirection*);
 void update_enemies(uint8_t);
 uint8_t draw_enemies(uint8_t);
 

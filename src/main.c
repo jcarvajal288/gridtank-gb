@@ -46,7 +46,25 @@ void create_enemies(void) {
     };
     add_turret(4, 1, pattern2);
 
-    add_tank(8, 3);
+    TankDirection pattern3[16] = {
+        ROTATE_RIGHT,
+        ROTATE_RIGHT,
+        ROTATE_RIGHT,
+        ROTATE_RIGHT,
+        ROTATE_RIGHT,
+        ROTATE_RIGHT,
+        ROTATE_RIGHT,
+        ROTATE_RIGHT,
+        ROTATE_RIGHT,
+        ROTATE_RIGHT,
+        ROTATE_RIGHT,
+        ROTATE_RIGHT,
+        ROTATE_RIGHT,
+        ROTATE_RIGHT,
+        ROTATE_RIGHT,
+        ROTATE_RIGHT,
+    };
+    add_tank(6, 3, pattern3);
 }
 
 void draw(void) {
